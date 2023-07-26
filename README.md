@@ -6,9 +6,9 @@ WhimsyEdit is your trusty companion for enchanting text editing within Confluenc
 ## How to Get WhimsyEdit:
 
 ### Cloning the GitHub Repository:
-1. Visit the WhimsyEdit GitHub repository: [https://github.com/yourusername/whimsyedit](https://github.com/yourusername/whimsyedit).
+1. Visit the WhimsyEdit GitHub repository: [https://github.com/miltonejones/whimsyedit](https://github.com/miltonejones/whimsyedit).
 2. Click on the "Code" button and then select "Clone" to copy the repository URL.
-3. Open your terminal or command prompt, navigate to your desired directory, and use the command: `git clone https://github.com/yourusername/whimsyedit.git`.
+3. Open your terminal or command prompt, navigate to your desired directory, and use the command: `git clone https://github.com/miltonejones/whimsyedit.git`.
 
 ### Adding WhimsyEdit to Chrome as an Unpacked Extension:
 1. Open Google Chrome and enter `chrome://extensions` in the address bar.
