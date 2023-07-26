@@ -1,0 +1,11 @@
+{
+  "name": "Atlassian GPT",
+  "version": "0.1",
+  "description": "Find videos in JavLibrary",  
+  "content_scripts": [ {
+    "js": ["jquery.min.js", "env.js", "openai.js", "styles.js", "snackbar.js", "index.js" ],
+    "matches": [ "https://*.atlassian.net/*" ]
+  }],
+  "permissions": ["activeTab"],
+  "manifest_version": 3
+}
