@@ -1,5 +1,3 @@
-Certainly! Here's the updated section to include the `env.js` file:
-
 ## How to Get WhimsyEdit:
 
 ### Cloning the GitHub Repository:
