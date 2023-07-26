@@ -1,102 +1,45 @@
-function waitForElementToAppear(elementId, callback) {
-  const element = document.getElementById(elementId);
-  if (element) {
-    // If the element already exists, return true immediately
-    callback(true);
-  } else {
-    // If the element doesn't exist yet, wait and check again
-    setTimeout(() => waitForElementToAppear(elementId, callback), 100);
-  }
-}
+ 
 
  
 // Store highlighted text
 let highlightedText = '';
-
-// Update on selection change  
+let maxTokens = 256;
+let messages = []
+ 
+/**
+ * Listens for a selection change event and sets the highlightedText variable to the selected text.
+ *
+ * @event selectionchange
+ * @callback
+ */
 document.addEventListener('selectionchange', () => {
+  // Get the selected text and store it in the highlightedText variable
   highlightedText = window.getSelection().toString();
 });
 
-// On Ctrl+Enter, generate and replace text
+/**
+ * Listens for a keydown event and checks if the ctrl key is pressed.
+ * If the ctrl key is pressed and the enter or y key is pressed, 
+ * calls the getResponse function asynchronously with the event as a parameter.
+ * @param {Event} event - The keydown event.
+ */
 document.addEventListener('keydown', async event => {
-  if(event.ctrlKey && event.key === 'Enter') {
-    event.preventDefault();
-     
-    Snackbar.open();
-    const { choices } = await generateText(create(highlightedText), .5, 512);
-    Snackbar.close();
-
-    const { message } = choices[0];  
-    const generated = message.content;
-
-
-
-    // Split text into lines
-    let lines = generated.split('\n');
-
-    // Replace selected text with <p> elements 
-    let sel = window.getSelection();
-    // sel.deleteFromDocument();
-
-
-    // Insert paragraphs in correct order
-    // lines.forEach(line => {
-    //   console.log({line})
-    //   let p = document.createElement('p');
-    //   p.textContent = line;
-    //  
-    // });
-
-    // Get parent element of selection 
-    let parent = sel.getRangeAt(0).commonAncestorContainer;
-
-    // Insert after selection 
-    sel.getRangeAt(0).collapse(false); // collapse to end 
-
-    lines.reverse().forEach(line => {
-      if (!line.length) return;
-      console.log({line})
-      let p = document.createElement('p');
-      p.textContent = line;
-      // $(parent.parentNode).append($(p))
-      parent.parentNode.after(p); 
-    });
-
-
-    $(parent.parentNode).remove(parent)
-    
-
-    // console.log ({ generated })
-    
-    // // Replace selected text with generated
-    // let sel = window.getSelection();
-    // sel.deleteFromDocument();
-    // sel.getRangeAt(0).insertNode(document.createTextNode(generated));
+  if (event.ctrlKey && (event.key === 'Enter' || event.key === 'y')) {
+    await getResponse(event);
   }
 });
-  
 
+/**
+ * Initializes the GPT Extension.
+ */
+function initializeGPTExtension() {
+  console.log(`Confluence GPT Extension. %cReady!`, 'color: lime'); 
+  Snackbar.init();  
+  ClearButton.init();
+  GearButton.init();
+} 
+
+// Call the initializeGPTExtension function to start the GPT Extension.
+initializeGPTExtension();  
  
-
-function start() {
-  console.log(`GPT Extension. Ready.`) 
-
-  // Usage example:
-  waitForElementToAppear('close-button', (elementAppeared) => {
-    if (elementAppeared) {
-      console.log('Element with ID "close-button" appeared!');
-      Snackbar.init() 
-      // You can perform any actions you need here once the element appears
-    } else {
-      console.log('Timeout: Element did not appear within specified time.');
-    }
-  }); 
-
-}
- 
-
-start();
-
-
  
