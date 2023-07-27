@@ -1,7 +1,15 @@
-
+ 
+let highlightedText = '';
+let openaiKey = '';
+let maxTokens = 256;
+let messages = [];
+let temperature = 0.7;
+ 
 // Create div elements
 var $gearDiv = $('<div>');
 var $clearDiv = $('<div>');
+var $heatDiv = $('<div>');
+const COOKIE_NAME = "gpt-settings"
 
 /**
  * Returns an object with CSS properties for a button with a circular shape and transition effect.
@@ -20,7 +28,7 @@ const buttonTrans = (bottom) => ({
   display: 'flex',
   'justify-content': 'center',
   'align-items': 'center',
-  transition: 'all 0.4s linear',
+  transition: 'all 0.4s ease-in',
   cursor: 'pointer',
 });
 
@@ -49,6 +57,64 @@ const createButton = ({button, bottom, title, fn, icon}) => {
   $('body').append(button);
 }
 
+/**
+ * Initializes settings from local storage, or prompts user to open settings if none are found
+ * @returns {boolean} - Whether or not settings were successfully initialized
+ */
+const initSettings = () => {
+  // Get settings from local storage
+  const json = localStorage.getItem(COOKIE_NAME);
+  
+  // If no settings found, prompt user to open settings
+  if (!json) {
+    return openSettings();
+  }
+
+  const settings = JSON.parse(json); 
+  
+  // Set global variables based on parsed settings
+  temperature = settings.temperature;
+  maxTokens = settings.max_tokens;
+  openaiKey = settings.api_key; 
+  
+  // If no OpenAI API key found, prompt user to open settings and return false
+  if (!openaiKey?.length) {
+    openSettings();
+    return false;
+  } 
+  
+  // Otherwise, settings were successfully initialized
+  return true;
+}
+
+
+/**
+ * Function to open Atlassian GPT Settings modal
+ * @function openSettings
+ * @returns {void}
+ */
+const openSettings = () => {
+  // define modal title and form
+  const modalTitle = "Atlassian GPT Settings";  
+
+  // define initial values for modal inputs
+  const initialValues = {
+    temperature,
+    api_key: openaiKey,
+    max_tokens: maxTokens
+  };
+
+  // open modal and handle response
+  Modal.open(modalTitle, settingsForm, initialValues, (response) => {
+    // update values based on response
+    temperature = response.temperature;
+    maxTokens = Number(response.max_tokens);
+    openaiKey = response.api_key;
+
+    // store updated values in local storage
+    localStorage.setItem(COOKIE_NAME, JSON.stringify(response));
+  });
+}
 
 /**
  * Creates a gear button with specified properties
@@ -60,11 +126,9 @@ const createGearButton = () => {
   const buttonProps = {
     button: $gearDiv, // DOM element to attach button to
     bottom: '-160px', // position relative to bottom of attached element
-    title: 'Set max token value', // tooltip text
-    fn: () => { // function to execute on button click
-      const num = prompt('Set max token value:', maxTokens); // prompt user for input
-      if (!num) return; // if user cancels prompt, exit function
-      maxTokens = Number(num); // set maxTokens variable to user input
+    title: 'Open Settings', // tooltip text
+    fn: () => { // function to execute on button click 
+      return openSettings(); 
     },
     icon: '⚙️', // icon to display on button
   };
@@ -72,9 +136,10 @@ const createGearButton = () => {
   // Create button with defined properties
   createButton(buttonProps);
 
-  // Open gear button after a delay
-  setTimeout(() => GearButton.open(), 4999);
+  setTimeout(() => GearButton.open(), 4999); 
 };
+ 
+
 
 /**
  * Creates a clear conversation button with specified properties
@@ -129,6 +194,32 @@ const ClearButton = {
   })
 }
 
+let spinOK = false;
+
+// Function to make the gear spin
+function startSpinning() {
+  // Set initial rotation angle (0 degrees)
+  let rotationAngle = 0;
+
+  // Function to animate the spinning
+  function spin() {
+    if (!spinOK) return;
+
+    // Increment the rotation angle by a small amount
+    rotationAngle += 1;
+    // Apply the new rotation angle to the gear div
+    $gearDiv.css('transform', `rotate(${rotationAngle}deg)`);
+
+    // Continue spinning by using requestAnimationFrame
+    requestAnimationFrame(spin);
+  }
+  
+
+  // Call the spin function to start the animation
+  spin();
+}
+
+
 /**
  * Represents a gear button object.
  * @typedef {Object} GearButton
@@ -137,10 +228,17 @@ const ClearButton = {
  */
 const GearButton = {  
   init: createGearButton, 
+  spin: () => {
+    spinOK = true;
+    startSpinning();
+  },
+  stop: () => {
+    spinOK = false; 
+  },
   open: () => {
     $gearDiv.css({
       bottom: '64px'
     }); 
   },
 }
-  
+   

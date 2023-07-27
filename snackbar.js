@@ -16,9 +16,9 @@ const createChatboxButton = async () => {
       position: 'fixed',
       bottom: '-100px',
       left: '40px',
-      transition: 'all 0.2s linear',
+      transition: 'all 0.2s ease-in',
       'z-index': 10000,
-      ...styles.button
+      ...styles.snackbar
     })
     .append(
       // Add text to the button
@@ -26,7 +26,7 @@ const createChatboxButton = async () => {
       .css({
         'font-weight': 600
       })
-      .text('⌛ Generating response...'),
+      .append('⌛ Generating response...'),
       // Add disclaimer text
       $('<small />')
         .css({

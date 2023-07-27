@@ -1,11 +1,4 @@
- 
 
- 
-// Store highlighted text
-let highlightedText = '';
-let maxTokens = 256;
-let messages = []
- 
 /**
  * Listens for a selection change event and sets the highlightedText variable to the selected text.
  *
@@ -25,7 +18,10 @@ document.addEventListener('selectionchange', () => {
  */
 document.addEventListener('keydown', async event => {
   if (event.ctrlKey && (event.key === 'Enter' || event.key === 'y')) {
-    await getResponse(event);
+    return await getResponse(event);
+  }
+  if (event.ctrlKey && (event.key === 'Enter' || event.key === 'q')) {
+    await getPhoto(event);
   }
 });
 
@@ -34,9 +30,8 @@ document.addEventListener('keydown', async event => {
  */
 function initializeGPTExtension() {
   console.log(`Confluence GPT Extension. %cReady!`, 'color: lime'); 
-  Snackbar.init();  
-  ClearButton.init();
-  GearButton.init();
+  [Snackbar, ClearButton, GearButton].map(button => button.init()); 
+  initSettings(); 
 } 
 
 // Call the initializeGPTExtension function to start the GPT Extension.
